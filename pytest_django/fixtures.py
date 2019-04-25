@@ -17,7 +17,7 @@ __all__ = [
     "django_db_setup",
     "db",
     "transactional_db",
-    "django_db_reset_sequences",
+    "serialized_rollback",
     "django_db_serialized_rollback",
     "admin_user",
     "django_user_model",
@@ -172,10 +172,10 @@ def db(request, django_db_setup, django_db_blocker):
 
     If multiple database fixtures are requested, they take precedence
     over each other in the following order (the last one wins): ``db``,
-    ``transactional_db``, ``django_db_reset_sequences``.
+    ``transactional_db``, ``serialized_rollback``.
     """
-    if "django_db_reset_sequences" in request.funcargnames:
-        request.getfixturevalue("django_db_reset_sequences")
+    if "serialized_rollback" in request.funcargnames:
+        request.getfixturevalue("serialized_rollback")
     if "django_db_serialized_rollback" in request.funcargnames:
         request.getfixturevalue("django_db_serialized_rollback")
     if (
@@ -200,17 +200,17 @@ def transactional_db(request, django_db_setup, django_db_blocker):
 
     If multiple database fixtures are requested, they take precedence
     over each other in the following order (the last one wins): ``db``,
-    ``transactional_db``, ``django_db_reset_sequences``.
+    ``transactional_db``, ``serialized_rollback``.
     """
-    if "django_db_reset_sequences" in request.funcargnames:
-        request.getfixturevalue("django_db_reset_sequences")
+    if "serialized_rollback" in request.funcargnames:
+        request.getfixturevalue("serialized_rollback")
     if "django_db_serialized_rollback" in request.funcargnames:
         request.getfixturevalue("django_db_serialized_rollback")
     _django_db_fixture_helper(request, django_db_blocker, transactional=True)
 
 
 @pytest.fixture(scope="function")
-def django_db_reset_sequences(request, django_db_setup, django_db_blocker):
+def serialized_rollback(request, django_db_setup, django_db_blocker):
     """Require a transactional test database with sequence reset support.
 
     This behaves like the ``transactional_db`` fixture, with the addition
@@ -220,7 +220,7 @@ def django_db_reset_sequences(request, django_db_setup, django_db_blocker):
 
     If multiple database fixtures are requested, they take precedence
     over each other in the following order (the last one wins): ``db``,
-    ``transactional_db``, ``django_db_reset_sequences``.
+    ``transactional_db``, ``serialized_rollback``.
     """
     _django_db_fixture_helper(
         request, django_db_blocker, transactional=True, reset_sequences=True

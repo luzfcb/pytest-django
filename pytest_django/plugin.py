@@ -31,7 +31,7 @@ from .fixtures import db  # noqa
 from .fixtures import django_user_model  # noqa
 from .fixtures import django_username_field  # noqa
 from .fixtures import live_server  # noqa
-from .fixtures import django_db_reset_sequences  # noqa
+from .fixtures import serialized_rollback  # noqa
 from .fixtures import django_db_serialized_rollback  # noqa
 from .fixtures import rf  # noqa
 from .fixtures import settings  # noqa
@@ -497,14 +497,14 @@ def _django_db_marker(request):
     """Implement the django_db marker, internal to pytest-django.
 
     This will dynamically request the ``db``, ``transactional_db``,
-    ``django_db_reset_sequences`` or ``django_db_serialized_rollback``
+    ``serialized_rollback`` or ``django_db_serialized_rollback``
      fixtures as required by the django_db marker.
     """
     marker = request.node.get_closest_marker("django_db")
     if marker:
         transaction, reset_sequences, serialized_rollback = validate_django_db(marker)
         if reset_sequences:
-            request.getfixturevalue("django_db_reset_sequences")
+            request.getfixturevalue("serialized_rollback")
         elif serialized_rollback:
             request.getfixturevalue("django_db_serialized_rollback ")
         elif transaction:
